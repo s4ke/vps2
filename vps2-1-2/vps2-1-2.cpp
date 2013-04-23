@@ -1,4 +1,4 @@
-// vps2-1-2.cpp : Defines the entry point for the console application.
+// vps2-1.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -6,44 +6,44 @@
 #include <iostream>
 #include <Windows.h>
 
+
 int _tmain(int argc, char* argv[])
 {
 	using namespace std;
 
-	int test = 1;
+	MPI::Init(argc,argv);
 
-	int myid, numprocs;
-    double startwtime = 0.0, endwtime;
-    int  namelen;
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
+	const size_t minsize = 8;
+	const size_t shifts = 10;
+	const int rank = MPI::COMM_WORLD.Get_rank();
+	double startwtime = 0.0, endwtime;
 
-    MPI::Init(argc,argv);
-    numprocs = MPI::COMM_WORLD.Get_size();
-    myid     = MPI::COMM_WORLD.Get_rank();
-    MPI::Get_processor_name(processor_name,namelen);
+	int data[minsize << shifts];	
 
-    cout << "Process " << myid << " of " << numprocs << " is on " <<
-	processor_name << endl;
-
-    
-    if (myid == 0)
+	for (int i = 0; i < shifts; i++)
 	{
-		startwtime = MPI::Wtime();
-		MPI::COMM_WORLD.Send(&test, 1, MPI_INTEGER, 1, 0);
-		test = 2;
-		endwtime = MPI::Wtime();
-		cout << "wall clock time = " << endwtime-startwtime << endl;
-    }
-	else if(myid == 1)
-	{
-		test = 0;
-		Sleep(1000);
-		MPI::COMM_WORLD.Recv(&test, 1, MPI_INTEGER, 0, 0);
+		size_t size = minsize << i;
 
-		cout << "Test = " << test << endl;
+		if(rank == 0)
+		{
+			startwtime = MPI::Wtime();
+			MPI::COMM_WORLD.Send(data, size, MPI_INTEGER, 1, 0);
+			endwtime = MPI::Wtime();
+			cout << "Send " << size << ": " << endwtime-startwtime << endl;			
+
+			startwtime = MPI::Wtime();
+			MPI::COMM_WORLD.Ssend(data, size, MPI_INTEGER, 1, 0);
+			endwtime = MPI::Wtime();
+			cout << "Ssend " << size << ": " << endwtime-startwtime << endl;			
+		}
+		else if (rank == 1)
+		{
+			MPI::COMM_WORLD.Recv(data, size, MPI_INTEGER, 0, 0);
+			MPI::COMM_WORLD.Recv(data, size, MPI_INTEGER, 0, 0);
+		}
 	}
 
-    MPI::Finalize();
-    return 0;
+	MPI::Finalize();
+	return 0;
 }
 
