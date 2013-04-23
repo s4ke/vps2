@@ -1,0 +1,84 @@
+\documentclass[10pt,a4paper]{article} [2003/01/01]
+\usepackage[german,ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb,amsmath,amsthm,pdfpages,graphicx,subfig,polynom} 
+\usepackage{setspace}
+\usepackage{lmodern, textcomp}
+\usepackage{color}
+\usepackage{wasysym}
+
+% Diagrams
+%\usepackage[all]{xy}
+\usepackage{xyling}
+
+\usepackage{listings}
+\lstset{numbers=left, numberstyle=\tiny, numbersep=5pt}
+\lstset{language=C++}
+
+\usepackage{geometry}
+\geometry{a4paper,left=15mm,right=20mm, top=1cm, bottom=2cm} 
+
+\newcommand{\pvec}{\begin{pmatrix}}
+\newcommand{\ppvec}{\end{pmatrix}}
+\newcommand{\thus}{\ \Rightarrow\ }
+\newcommand{\blank}{$\textblank$}
+
+\newcommand{\sumxy}{\sum\limits_{x,y}}
+\newcommand{\sumxys}{\sum\limits_{x',y'}}
+
+
+\title{1. Übung Verteilte und Parallele Systeme 2}
+\author{ Robert Günther (1145388) , Georg Rollinger (1161663) , Martin Braun(?) , 19.4.2013}
+\date{}
+
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+%Aufgaben in diesen Stil	
+\item[]{\textbf{1):} \\
+   Das Programm (Anhang 1) liefert den Output:\\
+   \textbf{
+   send = 3\\
+	rec = 2}\\
+	Der root Knoten schickt eine Variable $send$ an den zweiten Node. Dieser empfängt diesen allerdings erst nach einer kurzen Pause (sleep(2)). Während dieser Pause ändert root die versendete Variable. Da der Output die unveränderte Variable darstellt kann man sehen, dass die Variablen beim Sendevorgang kopiert werden.
+
+
+}
+\newpage
+\item[]{\textbf{Anhang 1):}
+	\begin{lstlisting}
+	#include <stdio.h>
+	#include <mpi.h>
+
+
+	int main (int argc, char** argv)
+	{
+		int rank,size,root=0;
+		MPI_Init (&argc, &argv);	
+  		MPI_Comm_rank (MPI_COMM_WORLD, &rank);	
+  		MPI_Comm_size (MPI_COMM_WORLD, &size);	
+		MPI_Status stat;
+		int send = 2;
+  		if(rank == root)
+  		{
+  			MPI_Send(&send,1,MPI_INT,1,1,MPI_COMM_WORLD);
+  			send = 3;
+  			printf("send = %d \n",send);
+  		}
+  		else
+  		{
+	  		int rec = 0;
+  			sleep(2);
+  			MPI_Recv(&rec,1,MPI_INT,0,1,MPI_COMM_WORLD,&stat);
+  			printf("rec = %d \n",rec);
+  		}
+  		MPI_Finalize();
+		return 0;
+	}
+	\end{lstlisting}
+}
+
+\end{enumerate}
+\end{document}
