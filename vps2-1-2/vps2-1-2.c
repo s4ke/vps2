@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 	int i = 0;
 	const size_t minsize = 8;
 	const size_t shifts = 10;
-	size_t size;
+	int size;
 	int rank;
 	int mpi_size;	
 	double startwtime = 0.0;
