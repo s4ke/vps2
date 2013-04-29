@@ -1,4 +1,4 @@
-﻿\documentclass[10pt,a4paper]{article} [2003/01/01]
+﻿\documentclass[10pt,a4paper]{article} %[2003/01/01]
 \usepackage[german,ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -43,7 +43,36 @@
    send = 3\\
 	rec = 2}\\
 	Der root Knoten schickt eine Variable $send$ an den zweiten Node. Dieser empfängt diesen allerdings erst nach einer kurzen Pause (sleep(2)). Während dieser Pause ändert root die versendete Variable. Da der Output die unveränderte Variable darstellt kann man sehen, dass die Variablen beim Sendevorgang kopiert werden.
+}
+\item[]{\textbf{2):} \\
+	Das Programm (Anhang 2) liefert den Output:\\
+	\textbf{
+	Send 8 : 0.000030\\
+	SSend 8 : 0.000043\\
+	Send 16 : 0.000001\\
+	SSend 16 : 0.000002\\
+	Send 32 : 0.000000\\
+	SSend 32 : 0.000001\\
+	Send 64 : 0.000000\\
+	SSend 64 : 0.000071\\
+	Send 128 : 0.000001\\
+	SSend 128 : 0.000224\\
+	Send 256 : 0.000001\\
+	SSend 256 : 0.000003\\
+	Send 512 : 0.000001\\
+	SSend 512 : 0.000006\\
+	Send 1024 : 0.000006\\
+	SSend 1024 : 0.000013\\
+	Send 2048 : 0.000009\\
+	SSend 2048 : 0.000018\\
+	Send 4096 : 0.000016\\
+	SSend 4096 : 0.000069\\
+	}
+Man sieht, dass $SSend$ ein vielfaches der Zeit von $Send$ benötigt. Dies liegt daran, dass es ein synchronisierter Sendevorgang ist. Hierbei wartet der Sender bis das Paket empfangen wurde. Die Wartezeit auf das empfangen des Pakets erklärt die erhöhte Laufzeit.
+}
 
+\item[]{\textbf{3):} \\
+Um eine logarithmische Ausführungszeit zu erreichen ist es nötig, dass der Broadcast Baumförmig aufgebaut ist. Hierzu muss jeder Node den Broadcast wieder an 2 weitere Nodes weitergeben. Dies wird im Programm in Anhang 3 umgesetzt.
 
 }
 \newpage
@@ -79,6 +108,115 @@
 	}
 	\end{lstlisting}
 }
+\item[]{\textbf{Anhang 2):}
+\begin{lstlisting}
+#include <mpi.h>
+#include <stdio.h>
 
+
+int main(int argc, char **argv)
+{
+	int i = 0;
+	const size_t minsize = 8;
+	const size_t shifts = 10;
+	int size;
+	int rank;
+	int mpi_size;	
+	double startwtime = 0.0;
+	double endwtime;
+	int *data = (int*) malloc(sizeof(int) * (minsize << shifts));	
+	MPI_Status stat;
+	
+	MPI_Init(&argc,&argv);
+	
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+
+	for (i = 0; i < shifts; i++) {
+		size = minsize << i;
+
+		if(rank == 0) {
+			startwtime = MPI_Wtime();
+			MPI_Send(data, size, MPI_INT, 1, 0, MPI_COMM_WORLD);
+			endwtime = MPI_Wtime();
+			printf("Send %d : %f\n", size, endwtime - startwtime);			
+
+			startwtime = MPI_Wtime();
+			MPI_Ssend(data, size, MPI_INT, 1, 0, MPI_COMM_WORLD);
+			endwtime = MPI_Wtime();
+			printf("SSend %d : %f\n", size, endwtime - startwtime);				
+		} else if (rank == 1) {
+			MPI_Recv(data, size, MPI_INT, 0, 0, MPI_COMM_WORLD, &stat);
+			MPI_Recv(data, size, MPI_INT, 0, 0, MPI_COMM_WORLD, &stat);
+		}
+	}
+
+	MPI_Finalize();
+	return 0;
+}
+
+\end{lstlisting}
+}
+\item[]{\textbf{Anhang 3):}
+\begin{lstlisting}
+#include <mpi.h>
+#include <stdio.h>
+
+void BcastSim(MPI_Comm comm, void* data, int count, MPI_Datatype type, int root)
+{
+	MPI_Status stat;
+	int myrank;
+	int rank2;
+	int range;
+	const int bcast_tag = 12345;
+	
+	MPI_Comm_rank(comm, &myrank);
+	MPI_Comm_size(comm, &range);
+	rank2 = myrank * 2;
+
+	if(myrank == root)
+	{
+		if(range > 1)
+		{
+			MPI_Send(data, count, type, 1, bcast_tag, comm);
+		}
+	}
+	else
+	{
+		MPI_Recv(data, count, type, myrank / 2, bcast_tag, comm, &stat);
+		if(range > rank2)
+			MPI_Send(data, count, type, rank2, bcast_tag, comm);
+
+		if(range > (rank2 + 1))
+			MPI_Send(data, count, type, rank2 + 1, bcast_tag, comm);
+	}
+}
+
+int main(int argc, char **argv)
+{
+	int myid, numprocs;
+	double startwtime = 0.0, endwtime;
+	int  namelen;
+	char processor_name[MPI_MAX_PROCESSOR_NAME];
+
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+	MPI_Get_processor_name(processor_name, &namelen);
+
+	printf("Process %d of %d is on %s\n", myid, numprocs, processor_name);
+
+	BcastSim(MPI_COMM_WORLD, &myid, 1, MPI_INT, 0);
+	printf("Test = %d\n", myid);
+
+	MPI_Finalize();
+	return 0;
+}
+
+
+
+
+\end{lstlisting}
+}
 \end{enumerate}
 \end{document}

@@ -9,7 +9,7 @@ void BcastSim(MPI_Comm comm, void* data, int count, MPI_Datatype type, int root)
 	int range;
 	const int bcast_tag = 12345;
 	
-	MPI_Comm_rank(comm, &rank2);
+	MPI_Comm_rank(comm, &myrank);
 	MPI_Comm_size(comm, &range);
 	rank2 = myrank * 2;
 
