@@ -8,13 +8,14 @@ int main (int argc, char** argv)
 	int mpi_size;
 	int rank;
 	int elements_per_proc;
-	int n = 10;
+	int n = 5;
 	MPI_Status stat;
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
 	double* data_a;
 	double* data_b;
+
 	if(rank == 0)
 	{
 		//hold 2 vectors of size n.
@@ -25,29 +26,43 @@ int main (int argc, char** argv)
 		{				
 			data_a[i] = i;
 			data_b[i] = data_a[i]+1;
+			printf("data_a at %i is %f \n",i,data_a[i]);
+			printf("data_b at %i is %f \n",i,data_b[i]);
 			++i;
 		}
 			
 	}
 	elements_per_proc = n / mpi_size;
+	//add on so we dont do any mistakes
+	elements_per_proc++;
 	double* get_data_a = malloc(sizeof(double)*elements_per_proc);
 	double* get_data_b = malloc(sizeof(double)*elements_per_proc);
-	MPI_Scatter(data_a,n,MPI_DOUBLE,get_data_a,elements_per_proc,MPI_DOUBLE,0,MPI_COMM_WORLD);
-	MPI_Scatter(data_b,n,MPI_DOUBLE,get_data_b,elements_per_proc,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Scatter(data_a,elements_per_proc,MPI_DOUBLE,get_data_a,elements_per_proc,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Scatter(data_b,elements_per_proc,MPI_DOUBLE,get_data_b,elements_per_proc,MPI_DOUBLE,0,MPI_COMM_WORLD);
 	int i = 0;
-	double* result = malloc(sizeof(double)*elements_per_proc);
+	double result;
 	while(i<elements_per_proc)
 	{
-		result[i] = get_data_a[i]*get_data_b[i];
+		if(rank*elements_per_proc+i >= n)
+			break;
+		result += get_data_a[i]*get_data_b[i];
 		++i;
 	}
 	double* result_all = NULL;
 	if(rank == 0)
 	{
-		result_all = malloc(sizeof(float)*n);
+		result_all = malloc(sizeof(float)*mpi_size);
 	}	
-	MPI_Gather(result,elements_per_proc,MPI_DOUBLE,result_all,elements_per_proc,MPI_DOUBLE,0,MPI_COMM_WORLD);
-	
+	MPI_Gather(&result,1,MPI_DOUBLE,result_all,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	i = 1;
+	if(rank == 0)
+	{
+		for(i; i < mpi_size; ++i)
+		{
+			result += result_all[i];
+		}
+		printf("result is %f !",result);
+	}
 
 
 
