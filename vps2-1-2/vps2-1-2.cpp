@@ -6,7 +6,7 @@
 #include <iostream>
 #include <Windows.h>
 
-
+    
 int _tmain(int argc, char* argv[])
 {
 	using namespace std;
