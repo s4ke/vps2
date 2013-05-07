@@ -1,31 +1,41 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void mpi_vec_mult(double* data, int n);
 
 int main (int argc, char** argv)
 {
+
 	int mpi_size;
 	int rank;
 	int elements_per_proc;
-	int n = 5;
+	
 	MPI_Status stat;
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
 	double* data_a;
 	double* data_b;
-
+	if(argc != 2)
+	{
+		if(rank==0)
+			printf("Please give me Vector length as first Argument!\n");
+		return 0;
+	}
+	int n = atoi(argv[1]);
 	if(rank == 0)
 	{
+		srand(time(NULL));
 		//hold 2 vectors of size n.
 		data_a = malloc(n*sizeof(double));
 		data_b = malloc(n*sizeof(double));
 		int i = 0;
 		while(i<n) 
 		{				
-			data_a[i] = i;
-			data_b[i] = data_a[i]+1;
+			data_a[i] = rand()/rand();
+			data_b[i] = rand()/rand();
 			printf("data_a at %i is %f \n",i,data_a[i]);
 			printf("data_b at %i is %f \n",i,data_b[i]);
 			++i;
