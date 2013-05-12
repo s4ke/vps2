@@ -64,8 +64,10 @@ void merge_sort_do(int* values, int length, MPI_Comm comm) {
 		
 		MPI_Gather(recv, elements_per_proc, MPI_INTEGER, values,
 			elements_per_proc, MPI_INTEGER, 0, comm);
-		
-		merge(values, values, length / 2, values + (length / 2), (length + 1) / 2);
+			
+		if(rank == 0) {
+			merge(values, values, length / 2, values + (length / 2), (length + 1) / 2);
+		}
 	} else {
 		int i;
 		for(i = 0; i < length; ++i) {
