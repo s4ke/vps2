@@ -94,7 +94,8 @@ void Merge_Sort_Rec(int* data, int count, MPI_Comm comm)
 		//BubbleSort (why in C ?, why? )
 		//std::sort
 
-		for(i = count - 1; i < 0; --i)
+		for(i = count - 1; i > 0; --i)
+		{
 			for(j = 0; j < i; ++j)
 			{
 				if(data[j] > data[j+1])
@@ -104,6 +105,7 @@ void Merge_Sort_Rec(int* data, int count, MPI_Comm comm)
 					data[j] = tmp;
 				}
 			}
+		}
 	}
 
 	
