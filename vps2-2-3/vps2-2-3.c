@@ -2,24 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
-void MPI_Merge_Sort(int* data, int count, MPI_Comm comm);
-void Merge_Sort_Rec(int* data, int count, MPI_Comm comm);
+int Merge_Sort_Rec(int* data, int count, MPI_Comm comm);
 
 int main (int argc, char** argv)
 {
-
-	int mpi_size;
-	int rank;
-	int elements_per_proc;
-	int n,i;
+	int i,rank;
 	int data[64];
-	
-	
-	MPI_Status stat;
+
+
 	MPI_Init(&argc,&argv);
 
-	
+
 	for(i = 0; i< 64; ++i)
 	{
 		data[i] = rand();
@@ -27,111 +22,136 @@ int main (int argc, char** argv)
 
 	Merge_Sort_Rec(data, 64, MPI_COMM_WORLD);
 
-	for(i = 0; i< 64; ++i)
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	if(rank == 0)
 	{
-		printf("%i\n", data[i]);
+		for(i = 0; i< 64; ++i)
+		{
+			printf("%i\n", data[i]);
+		}
 	}
-	
+
 	MPI_Finalize();
 	return 0;
 }
 
-void Merge_Sort_Rec(int* data, int count, MPI_Comm comm)
+int Merge_Sort_Rec(int* data, int count, MPI_Comm comm)
 {
-	int mpi_size;
-	int rank;
-	MPI_Comm sub_comm = MPI_COMM_NULL;
-	int in_lower_half;
-	int *rec_data;
+	int global_size;
+	int global_rank;
+	int local_rank, local_size;
+	int gather_rank;
+	MPI_Comm sub_comm = MPI_COMM_NULL, gather_comm;
+	int color;
 	int i,j, tmp;
 	int elements_per_proc;
-	int* recv_ptr;
+	int* recv_ptr = NULL, *send_ptr = NULL;
 
-	MPI_Comm_rank(comm, &rank);
-	MPI_Comm_size(comm, &mpi_size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &global_size);
 
-	if(mpi_size > 1)
+	MPI_Comm_rank(comm, &local_rank);
+	MPI_Comm_size(comm, &local_size);
+
+	elements_per_proc = count / global_size;
+	send_ptr = data + (global_rank * elements_per_proc);
+
+	if(local_size == global_size)
 	{
-		elements_per_proc = count / mpi_size;
-		recv_ptr = data + rank * elements_per_proc;
-		MPI_Scatter(
-			data, elements_per_proc, MPI_INTEGER, 
+		recv_ptr = (int*) malloc(sizeof(int) * elements_per_proc);
+
+		MPI_Scatter(data, elements_per_proc, MPI_INTEGER, 
 			recv_ptr, elements_per_proc, MPI_INTEGER, 
-			0, comm);
+			0, MPI_COMM_WORLD);
+		memcpy(send_ptr, recv_ptr, sizeof(int) * elements_per_proc);
 
-		in_lower_half = rank < (mpi_size / 2);
-		rec_data = (in_lower_half) ? data : data + (mpi_size/2);
-		MPI_Comm_split(comm, in_lower_half, rank, &sub_comm);
-		
-		Merge_Sort_Rec(rec_data, count / 2, sub_comm);
+		free(recv_ptr);		
+	}
 
-		MPI_Gather(recv_ptr, elements_per_proc, MPI_INTEGER,
-		data, elements_per_proc, MPI_INTEGER,
-		0, comm);
+	if(local_size > 1)
+	{
+		color = local_rank < (local_size / 2);
+		MPI_Comm_split(comm, color, local_rank, &sub_comm);
+		color = (local_rank % (local_size / 2)) == 0;
+		MPI_Comm_split(comm, color, local_rank, &gather_comm);
 
-		//Merge
-		i = 0;
-		j = count / 2;
-	
-		while(j < count && i < count)
+		elements_per_proc = Merge_Sort_Rec(data, count, sub_comm);
+
+
+
+		if(color)
 		{
-			tmp = data[i];
-			if(tmp <= data[j])
+			MPI_Comm_rank(gather_comm, &gather_rank);
+
+			if(gather_rank == 0)
 			{
-				data[i] = tmp;
+				recv_ptr = (int*) malloc(sizeof(int) * elements_per_proc * 2);
 			}
-			else
+
+			MPI_Gather(send_ptr, elements_per_proc, MPI_INTEGER,
+				recv_ptr, elements_per_proc, MPI_INTEGER,
+				0, gather_comm);
+
+			if(gather_rank == 0)
 			{
-				data[i] = data[j];
-				data[j] = tmp;
-				++j;
-			}	
-			++i;
+				//Merge
+
+				count = elements_per_proc * 2;
+				i = 0;
+				j = count / 2;
+				tmp = 0;
+
+				while(tmp < count)
+				{
+					
+					if(i < (count / 2) && (j == count || recv_ptr[i] <= recv_ptr[j]))
+					{
+						send_ptr[tmp] = recv_ptr[i];
+						++i;
+					}
+					else
+					{
+						
+						send_ptr[tmp] = recv_ptr[j];
+						++j;
+					}
+					++tmp;
+				}
+
+
+				free(recv_ptr);
+			}
 		}
+
+
+
+		return elements_per_proc * 2;
 	}
 	else
 	{
+
 		//BubbleSort (why in C ?, why? )
 		//std::sort
 
-		for(i = count - 1; i > 0; --i)
+
+
+
+		for(i = elements_per_proc - 1; i > 0; --i)
 		{
 			for(j = 0; j < i; ++j)
 			{
-				if(data[j] > data[j+1])
+				if(send_ptr[j] > send_ptr[j+1])
 				{
-					tmp = data[j+1];
-					data[j+1] = data[j];
-					data[j] = tmp;
+					tmp = send_ptr[j+1];
+					send_ptr[j+1] = send_ptr[j];
+					send_ptr[j] = tmp;
 				}
 			}
 		}
+
+		return elements_per_proc;
 	}
 
-	
-}
 
-void MPI_Merge_Sort(int* data, int count, MPI_Comm comm)
-{
-	int mpi_size;
-	int rank;
-	int elements_per_proc;
-	int* recv_ptr;
-
-	MPI_Comm_rank(comm, &rank);
-	MPI_Comm_size(comm, &mpi_size);
-
-	
-	elements_per_proc = count / mpi_size;
-	recv_ptr = data + rank * elements_per_proc;
-	MPI_Scatter(
-		data, elements_per_proc, MPI_INTEGER, 
-		recv_ptr, elements_per_proc, MPI_INTEGER, 
-		0, comm);
-
-	Merge_Sort_Rec(data, count, comm);
-
-	MPI_Gather(recv_ptr, elements_per_proc, MPI_INTEGER,
-		data, elements_per_proc, MPI_INTEGER,
-		0, comm);
 }
