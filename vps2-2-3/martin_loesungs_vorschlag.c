@@ -30,10 +30,10 @@ int main (int argc,char** argv) {
 		for(i = 0; i < values; ++i) {
 			printf("%d\n", bla[i]);
 		}
-
 	} else if(myid == 0) {
 		printf("please specify an even amount of processors or only one");
-	}	
+	}
+	
 	MPI_Finalize();	
 }
 
