@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vps2-2-1", "vps2-2-1\vps2-2
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vps2-2-2", "vps2-2-2\vps2-2-2.vcxproj", "{0136E212-BA18-46FE-BB70-D8DACB3600C6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vps2-2-3", "vps2-2-3\vps2-2-3.vcxproj", "{2A34161C-22E1-4568-A113-764F2D102DAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -71,6 +73,16 @@ Global
 		{0136E212-BA18-46FE-BB70-D8DACB3600C6}.Release|Win32.ActiveCfg = Release|x64
 		{0136E212-BA18-46FE-BB70-D8DACB3600C6}.Release|x64.ActiveCfg = Release|x64
 		{0136E212-BA18-46FE-BB70-D8DACB3600C6}.Release|x64.Build.0 = Release|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Debug|Win32.ActiveCfg = Debug|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Debug|x64.ActiveCfg = Debug|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Debug|x64.Build.0 = Debug|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Release|Mixed Platforms.Build.0 = Release|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Release|Win32.ActiveCfg = Release|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Release|x64.ActiveCfg = Release|x64
+		{2A34161C-22E1-4568-A113-764F2D102DAA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
