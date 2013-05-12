@@ -1,0 +1,49 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[german,ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb,amsmath,amsthm,pdfpages,graphicx,subfig,polynom} 
+\usepackage{setspace}
+\usepackage{lmodern, textcomp}
+\usepackage{color}
+\usepackage{wasysym}
+
+% Diagrams
+%\usepackage[all]{xy}
+\usepackage{xyling}
+
+\usepackage{listings}
+\lstset{numbers=left, numberstyle=\tiny, numbersep=5pt}
+\lstset{language=C++}
+
+\usepackage{geometry}
+\geometry{a4paper,left=15mm,right=20mm, top=1cm, bottom=2cm} 
+
+\newcommand{\pvec}{\begin{pmatrix}}
+\newcommand{\ppvec}{\end{pmatrix}}
+\newcommand{\thus}{\ \Rightarrow\ }
+\newcommand{\blank}{$\textblank$}
+\newcommand{\sumxy}{\sum\limits_{x,y}}
+\newcommand{\sumxys}{\sum\limits_{x',y'}}
+
+
+\title{2. Übung Verteilte und Parallele Systeme 2}
+\author{ Robert Günther (1145388) , Georg Rollinger (1161663) , Martin Braun(1249080)}
+\date{\today{}}
+
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+%Aufgaben in diesen Stil	
+\item[]{\textbf{1)} \\
+
+}
+
+\item[]{\textbf{2)} \\
+Die implementierung in dem Beispiel funktioniert dann deadlock-frei, wenn die Knoten einen Puffer haben, der ausreicht um die zu versendende Datenmenge zwischenzuspeichern.\\
+Dann kann der MPI_Send Aufruf zurückkehren und der Recv Aufruf beginnen. Falls der Speicher nicht ausreicht, kann Send erst zurückkehren, wenn die Übertragung abgeschlossen ist.
+Das kann jedoch erst passieren, wenn der Zielknoten die Daten empfangen hat. Dieser würde aber auch darauf warten, dass sein Send Aufruf zurückkehrt und so weiter (deadlock).
+}
+\end{enumerate}
+\end{document}
