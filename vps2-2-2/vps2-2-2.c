@@ -3,7 +3,8 @@
 #include <string.h>
 #include <mpi.h>
 
-void Gather_ring_theory (float x[],int blocksize, float []);
+void Gather_ring_theory (float x[],int blocksize, float y[]);
+void Gather_ring(float x[], int blocksize, float y[]);
 
 int main (int argc,char** argv)
 {
@@ -38,7 +39,6 @@ int main (int argc,char** argv)
 	}
 	
 	printf("(Before) Process %d of %d is on %s: %s\n", myid, numprocs, processor_name, output);
-	
 	*output = '\0';
 	
 	Gather_ring_theory(x, blocksize, y);
@@ -51,11 +51,57 @@ int main (int argc,char** argv)
 
 	printf("(After) Process %d of %d is on %s: %s\n", myid, numprocs, processor_name, output);
 	
+	*output = '\0';
+	
+	for(i = 0; i < numprocs; ++i) {
+		x[i] = myid;
+		y[i] = myid;
+	}
+	
+	for(i = 0; i < numprocs; ++i) {
+		itoa(y[i], tmp, 10);
+		strcat(output, " ");
+		strcat(output, tmp);
+	}
+	
+	printf("(Before) Process %d of %d is on %s: %s\n", myid, numprocs, processor_name, output);
+	*output = '\0';
+	
+	Gather_ring(x, blocksize, y);
+	
+	for(i = 0; i < numprocs; ++i) {
+		itoa(y[i], tmp, 10);
+		strcat(output, " ");
+		strcat(output, tmp);
+	}
+
+	printf("(After) Process %d of %d is on %s: %s\n", myid, numprocs, processor_name, output);
+
 	free(x);
 	free(y);
 	
 	MPI_Finalize();
 }
+
+void Gather_ring (float x[], int blocksize, float y[]) {
+	int i, p, my_rank, succ, pred;
+	int send_offset, recv_offset;
+	MPI_Status status;
+	MPI_Comm_size (MPI_COMM_WORLD, &p);
+	MPI_Comm_rank (MPI_COMM_WORLD, &my_rank);
+	for (i=0; i<blocksize; i++)
+		y[i+my_rank * blocksize] = x[i];
+	succ = (my_rank+1) % p;
+	pred = (my_rank-1+p) % p;
+	for (i=0; i<p-1; i++) {
+		send_offset = ((my_rank-i+p) % p) * blocksize;
+		recv_offset = ((my_rank-i-1+p) % p) * blocksize;
+		MPI_Sendrecv(y + send_offset, blocksize, MPI_FLOAT, succ, 0,
+				y + recv_offset, blocksize, MPI_FLOAT, pred, 0,
+				MPI_COMM_WORLD, &status);
+	}
+}
+
 
 void Gather_ring_theory (float x[], int blocksize, float y[])
 { 
