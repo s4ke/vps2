@@ -68,27 +68,11 @@ int main (int argc, char** argv)
 	{
 		result_all = malloc(sizeof(float)*mpi_size);
 	}	
-	MPI_Gather(&result,1,MPI_DOUBLE,result_all,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-	i = 1;
+	MPI_Reduce(&result,result_all,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
 	if(rank == 0)
 	{
-		for(i; i < mpi_size; ++i)
-		{
-			result += result_all[i];
-		}
-		printf("result is %f !",result);
+		printf("result is %f !",result_all[0]);
 	}
-
-
-
-	// delete(get_data_b);
-	// delete(get_data_a);
-	// delete(result);
-	// if(rank == 0)
-	// {
-	// 	delete(data_a);
-	// 	delete(data_b);
-	// }
 	MPI_Finalize();
 	return 0;
 }

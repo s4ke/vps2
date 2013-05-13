@@ -42,7 +42,7 @@
 
 \item[]{\textbf{2)} \\
 Die implementierung in dem Beispiel funktioniert dann deadlock-frei, wenn die Knoten einen Puffer haben, der ausreicht um die zu versendende Datenmenge zwischenzuspeichern.\\
-Dann kann der MPI_Send Aufruf zurückkehren und der Recv Aufruf beginnen. Falls der Speicher nicht ausreicht, kann Send erst zurückkehren, wenn die Übertragung abgeschlossen ist.
+Dann kann der MPI Send Aufruf zurückkehren und der Recv Aufruf beginnen. Falls der Speicher nicht ausreicht, kann Send erst zurückkehren, wenn die Übertragung abgeschlossen ist.
 Das kann jedoch erst passieren, wenn der Zielknoten die Daten empfangen hat. Dieser würde aber auch darauf warten, dass sein Send Aufruf zurückkehrt und so weiter (deadlock).
 }
 
