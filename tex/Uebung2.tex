@@ -45,5 +45,16 @@ Die implementierung in dem Beispiel funktioniert dann deadlock-frei, wenn die Kn
 Dann kann der MPI_Send Aufruf zurückkehren und der Recv Aufruf beginnen. Falls der Speicher nicht ausreicht, kann Send erst zurückkehren, wenn die Übertragung abgeschlossen ist.
 Das kann jedoch erst passieren, wenn der Zielknoten die Daten empfangen hat. Dieser würde aber auch darauf warten, dass sein Send Aufruf zurückkehrt und so weiter (deadlock).
 }
+
+\item[]{\textbf{3)} \\
+Unser entworfener Merge Sort funktioniert nach folgendem Schema: \\
+n - Teilnehmerprozesse, m - zu sortierende Datenelemente \\
+Der Root Prozess führt zu Beginn einen Scatter an alle Teilnehmerprozesse durch, so dass danach jeder Prozess genau $\frac{m}{n}$ Datenelemente erhalten hat. 
+Danach beginnt die Rekursive Phase des Algorithmus. In jedem Schritt wird der verwendete Kommunikator zwei Mal aufgeteilt.
+Einmal wird der Kommunikator in zwei neue aufgeteilt. Dabei enthält jeder jeweils halb so viele Prozesse wie der Ursprungskommunikator, aufgeteilt nach deren Rank in eine obere und eine untere Hälfte. 
+Der zweite Split wird durchgeführt um einen Kommunikator zu enthalten, der die beiden Root Prozesse (rank == 0) der oberen und unteren Hälfte enthält, um ihnen eine direkte Kommunikation zu ermöglichen.\\
+
+Wenn die Rekursion so weit fortgeschritten ist, dass im Kommunikator nur noch ein Prozess enthalten ist, sortiert dieser seinen Arrayteil lokal. Dann wird auf dem aufsteigenden Ast der Rekursion von den jeweiligen Root Prozessen ein Gather von seinen zwei Nachfolgern, gefolgt von einem Merge der Ergebnisse, durchgeführt.
+}
 \end{enumerate}
 \end{document}
