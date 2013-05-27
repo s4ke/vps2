@@ -63,12 +63,12 @@ int main(int argc, char** argv)
 	write(snd_sock, magic_numbers, MAGIC_REQUIRED_BYTES);
 
 
-	fprintf(stderr, "Start Typing!\n");
+	
 
 
 	do {
-		bzero(buffer,256);
-		input_line = fgets(buffer, 255, stdin);
+		bzero(buffer, sizeof(buffer));
+		input_line = fgets(buffer, sizeof(buffer) - 1, stdin);
 		if(input_line != NULL) {
 			write(snd_sock, buffer, strlen(buffer));
 		}

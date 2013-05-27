@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <time.h>
 
 int main(int argc, char** argv)
 {
@@ -18,8 +19,10 @@ int main(int argc, char** argv)
 	char buffer[256];
 	int recv_len, magic_len;
 	int quit = 0;
-
-
+    int bytes_rec = 0;
+    double elapsed = 0.0;
+    struct timeval tv;
+    struct timeval start_tv;
 
 	if(argc > 1) {
 	   port = atoi(argv[1]);
@@ -67,25 +70,32 @@ int main(int argc, char** argv)
 		}
 
 		if(magic_numbers[0] == 21 && magic_numbers[1] == 42 && magic_numbers[2] == 63) {
-			fprintf(stderr, "Right magic.\n");
-			do {
-				bzero(buffer,256);
-				recv_len = read(stream_sock, buffer, 255);
+	      do {
+                gettimeofday(&start_tv, NULL);
+
+				bzero(buffer, sizeof(buffer));
+				recv_len = read(stream_sock, buffer, sizeof(buffer) - 1);
 				if(recv_len < 0) {
 					fprintf(stderr, "Read failed.\n");
 				} else {
 					fprintf(stdout, "%s", buffer);
 				}
+                if(recv_len > 0) {
+                    bytes_rec += recv_len;
+                }
 			} while (recv_len > 0);
-			quit = 1;
-			fprintf(stderr, "All Read.\n");
+            quit = 1;
+
+            gettimeofday(&tv, NULL);
+            elapsed = (tv.tv_sec - start_tv.tv_sec) +
+                  (tv.tv_usec - start_tv.tv_usec) / 1000000.0;
+			fprintf(stderr, "took %f seconds to receive %d bytes\n", elapsed, bytes_rec);
 		} else {
 			fprintf(stderr, "Wrong magic.\n");
 		}
 		close(stream_sock);
 	}
 	close(rcv_sock);
-
 
 	return 0;
 }
