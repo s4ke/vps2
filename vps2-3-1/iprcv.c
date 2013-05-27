@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	struct sockaddr_in address;
 	unsigned int cli_address_len;
 	struct sockaddr_in cli_address;
-	char buffer[256];
+	char buffer[1024];
 	int recv_len, magic_len;
 	int quit = 0;
     int bytes_rec = 0;
@@ -70,27 +70,24 @@ int main(int argc, char** argv)
 		}
 
 		if(magic_numbers[0] == 21 && magic_numbers[1] == 42 && magic_numbers[2] == 63) {
-			
-          gettimeofday(&start_tv, NULL);
-	      do {
-
-				bzero(buffer, sizeof(buffer));
+           do { 
+                bzero(buffer, sizeof(buffer));
+                gettimeofday(&start_tv, NULL);
 				recv_len = read(stream_sock, buffer, sizeof(buffer) - 1);
-				if(recv_len < 0) {
+				gettimeofday(&tv, NULL);
+                if(recv_len < 0) {
 					fprintf(stderr, "Read failed.\n");
 				} else {
 					fprintf(stdout, "%s", buffer);
 				}
                 if(recv_len > 0) {
+                    elapsed += (tv.tv_sec - start_tv.tv_sec) +
+                      (tv.tv_usec - start_tv.tv_usec) / 1000000.0;
                     bytes_rec += recv_len;
                 }
 			} while (recv_len > 0);
             quit = 1;
-
-            gettimeofday(&tv, NULL);
-            elapsed = (tv.tv_sec - start_tv.tv_sec) +
-                  (tv.tv_usec - start_tv.tv_usec) / 1000000.0;
-			fprintf(stderr, "took %f seconds to receive %d bytes\n", elapsed, bytes_rec);
+            fprintf(stderr, "took %f seconds to receive %d bytes\n", elapsed, bytes_rec);
 		} else {
 			fprintf(stderr, "Wrong magic.\n");
 		}
