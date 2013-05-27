@@ -1,0 +1,68 @@
+\documentclass[10pt,a4paper]{article} [2003/01/01]
+\usepackage[german,ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb,amsmath,amsthm,pdfpages,graphicx,subfig,polynom} 
+\usepackage{setspace}
+\usepackage{lmodern, textcomp}
+\usepackage{color}
+\usepackage{wasysym}
+
+% Diagrams
+%\usepackage[all]{xy}
+\usepackage{xyling}
+
+\usepackage{listings}
+\lstset{numbers=left, numberstyle=\tiny, numbersep=5pt}
+\lstset{language=C++}
+
+\usepackage{geometry}
+\geometry{a4paper,left=15mm,right=20mm, top=1cm, bottom=2cm} 
+
+\newcommand{\pvec}{\begin{pmatrix}}
+\newcommand{\ppvec}{\end{pmatrix}}
+\newcommand{\thus}{\ \Rightarrow\ }
+\newcommand{\blank}{$\textblank$}
+
+\newcommand{\sumxy}{\sum\limits_{x,y}}
+\newcommand{\sumxys}{\sum\limits_{x',y'}}
+
+
+\title{3. Übung Verteilte und Parallele Systeme 2}
+\author{ Robert Günther (1145388) , Georg Rollinger (1161663) , Martin Braun(?) , 19.4.2013}
+\date{}
+
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+%Aufgaben in diesen Stil	
+\item[]{\textbf{3.2}
+\\Folgende Performance hat sich beim ausführen der ipsnd/iprcv Kombination ergeben:
+
+256 byte Paketgröße:\\
+	116kb:\\
+	took 0.080696 seconds to receive 50953 bytes\\
+	1.7mb:\\
+	took 0.992676 seconds to receive 1006634 bytes\\
+1024 byte Paketgröße:\\
+	116kb:\\
+	took 0.054936 seconds to receive 36340 bytes\\
+	1.7mb:\\
+	took 0.813740 seconds to receive 679347 bytes\\
+
+Benutzt wurde ein Rechner aus dem Uni Netz zusammen mit einem vServer,
+der bei Hetzner gehostet ist. Getestet wurde mit zwei unterschiedlichen
+Dateigrößen die per cat | ./ipsnd <ip> <port> übertragen wurden. Man
+sieht, dass es wichtig ist die richtige Paketgröße zu wählen, weil sonst
+unnötig viele Bytes mitübertragen werden müssen (overhead des Protokolls).
+Die Anzahl der Bytes von oben sind aufeinander-addierte Werte von read(...)
+(Rückgabewert). Es wurde im Quelltext zudem nur die Zeit von vor read(...)
+bis nach read(...) gemessen um den Output nicht mitzumessen.
+
+}
+
+
+
+\end{enumerate}
+\end{document}
