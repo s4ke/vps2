@@ -70,8 +70,9 @@ int main(int argc, char** argv)
 		}
 
 		if(magic_numbers[0] == 21 && magic_numbers[1] == 42 && magic_numbers[2] == 63) {
+			
+          gettimeofday(&start_tv, NULL);
 	      do {
-                gettimeofday(&start_tv, NULL);
 
 				bzero(buffer, sizeof(buffer));
 				recv_len = read(stream_sock, buffer, sizeof(buffer) - 1);
