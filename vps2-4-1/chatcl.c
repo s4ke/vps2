@@ -17,13 +17,14 @@ char buffer[4097];
 int rcv_sock = *((int*)socket);
 int recv_len = 0;
 
+fprintf(stderr, "Receiving.\n");
 do {
 	bzero(buffer,4097);
 	recv_len = recvfrom(rcv_sock, buffer, 4096, 0, NULL, NULL);
 	if(recv_len < 0) {
 		fprintf(stderr, "Rcv failed.\n");
 	} else {
-		fprintf(stdout, "%s", buffer);
+		fprintf(stdout, "Message: %s", buffer);
 	}
 } while (!quit);
 
@@ -92,6 +93,7 @@ do {
 	input_line = fgets(buffer, 4095, stdin);
 	if(input_line != NULL) {
 		sendto(snd_sock, buffer, strlen(buffer), 0,(struct sockaddr*) &srv_address, sizeof(srv_address));
+        fprintf(stderr, "Sent!\n");		
 	}
 	
 } while (input_line != NULL && strlen(input_line) > 1);
