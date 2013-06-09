@@ -28,18 +28,22 @@ pthread_mutex_t send_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
 map<string, vector<client_info_t> > clients; 
 map<string, vector<string> > to_send;
 
-int main(int argc, char** argv) {
-	if(argc != 1) {
-		printf("usage: <%s> port", argv[0]);
+int main(int argc, char** argv) {	
+	if(argc != 2) {
+		printf("usage: %s <port>\n", argv[0]);
+		return -1;	
 	}
 	struct sockaddr_in serv_addr;
+	printf("opening socket...\n");
     	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     	bzero(&serv_addr, sizeof(serv_addr));
     	serv_addr.sin_family = AF_INET;
     	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     	serv_addr.sin_port = htons(atoi(argv[1]));
+	printf("binding...\n");
 	bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
+	printf("creating threads...\n");
 	pthread_t rec;
 	pthread_t snd;
 	pthread_create(&rec, NULL, receiver, NULL);
@@ -60,7 +64,7 @@ void* receiver(void *args) {
 			buf, sizeof(buf),
 			0, (struct sockaddr*) &client_info.address,
 			&client_info.addrlen); 		
-		printf("received %ld bytes with text: %s", rec, buf);
+		printf("received %ld bytes with text: %s\n", rec, buf);
 		
 	}	
 }
