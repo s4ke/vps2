@@ -24,7 +24,7 @@ do {
 	if(recv_len < 0) {
 		fprintf(stderr, "Rcv failed.\n");
 	} else {
-		fprintf(stdout, "Message: %s", buffer);
+		fprintf(stdout, "%s", buffer);
 	}
 } while (!quit);
 
@@ -41,13 +41,16 @@ struct sockaddr_in address;
 unsigned int srv_address_len;
 struct sockaddr_in srv_address;
 char buffer[4096];
+char* msgbuffer;
 int recv_len;
+int nick_len;
 
 char* input_line = NULL;
 struct hostent *server;
 
-if(argc < 4)  {
-   fprintf(stderr, "Too few arguments.\n usage: chatcl <server> <port> <chatroom>");
+if(argc < 5)  {
+   fprintf(stderr, "Too few arguments. usage: chatcl <server> <port> <chatroom> <nick>");
+   return -1;
 }
 
 
@@ -84,16 +87,24 @@ pthread_create(&output,
 
 sendto(snd_sock, argv[3], strlen(argv[3]), 0,(struct sockaddr*) &srv_address, sizeof(srv_address));
 
+nick_len = strlen(argv[4]);
+strcpy(buffer, argv[4]);
+buffer[nick_len++] = ':';
+buffer[nick_len++] = ' ';
+msgbuffer = buffer + nick_len;
+
+
 fprintf(stderr, "Joined Room %s!\n", argv[3]);
+fprintf(stderr, "As %s!\n", argv[4]);
 fprintf(stderr, "Start Typing!\n");
 
 
+
 do {
-	bzero(buffer,4096);
-	input_line = fgets(buffer, 4095, stdin);
+	bzero(msgbuffer,4096 - nick_len);
+	input_line = fgets(msgbuffer, 4095 - nick_len, stdin);
 	if(input_line != NULL) {
-		sendto(snd_sock, buffer, strlen(buffer), 0,(struct sockaddr*) &srv_address, sizeof(srv_address));
-        fprintf(stderr, "Sent!\n");		
+		sendto(snd_sock, buffer, strlen(buffer), 0,(struct sockaddr*) &srv_address, sizeof(srv_address));	
 	}
 	
 } while (input_line != NULL && strlen(input_line) > 1);
