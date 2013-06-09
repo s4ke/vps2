@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <algorithm>
 #include <arpa/inet.h>
+#include <sstream>
 
 const int MESSAGE_LENGTH = 4096;
 
@@ -77,8 +78,11 @@ void* receiver(void *args) {
 			continue;
 		}
 
-		string ipString = ip;
-		printf("ip: %s\n", ip);
+	 	stringstream builder;
+		builder << ip << ":" << client_info.address.sin_port;
+		string ipString = builder.str();
+
+		printf("ip: %s\n", ipString.c_str());
 		if(connected_ips.find(ipString) == connected_ips.end()) {
 			pthread_mutex_lock(&client_mutex);		
 			string room = buf;
@@ -115,6 +119,17 @@ void send_to_all_clients(pair<const string, vector<string> >& pair) {
 				pair.second[j].length(),
 				0, (struct sockaddr *) &recipients[i].address,
 				recipients[i].addrlen);				
+			char ip[100];	
+			if(inet_ntop(AF_INET, &recipients[i].address.sin_addr,
+				ip, recipients[i].addrlen) == NULL) {
+				printf("couldn't convert ip to string");
+				continue;
+			}
+			stringstream builder;
+			builder << ip << ":" << recipients[i].address.sin_port;
+			string ipString = builder.str();
+			
+			printf("sending to %s\n: %s\n", ipString.c_str(), pair.second[j].c_str());
 		}	
 	}
 	pair.second.clear();
