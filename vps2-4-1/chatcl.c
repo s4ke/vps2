@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <pthread.h>
+#include <errno.h>
 
 int quit = 0;
 
@@ -19,7 +20,7 @@ int recv_len = 0;
 do {
 	bzero(buffer,4097);
 	recv_len = recvfrom(rcv_sock, buffer, 4096, 0, NULL, NULL);
-	if(recv_len < 0 && !quit) {
+	if(recv_len < 0) {
 		fprintf(stderr, "Rcv failed.\n");
 	} else {
 		fprintf(stdout, "%s", buffer);
@@ -38,7 +39,7 @@ int snd_sock = 0;
 struct sockaddr_in address;
 unsigned int srv_address_len;
 struct sockaddr_in srv_address;
-char buffer[256];
+char buffer[4096];
 int recv_len;
 
 char* input_line = NULL;
@@ -87,10 +88,10 @@ fprintf(stderr, "Start Typing!\n");
 
 
 do {
-	bzero(buffer,256);
-	input_line = fgets(buffer, 255, stdin);
+	bzero(buffer,4096);
+	input_line = fgets(buffer, 4095, stdin);
 	if(input_line != NULL) {
-		write(snd_sock, buffer, strlen(buffer));
+		sendto(snd_sock, buffer, strlen(buffer), 0,(struct sockaddr*) &srv_address, sizeof(srv_address));
 	}
 	
 } while (input_line != NULL && strlen(input_line) > 1);
