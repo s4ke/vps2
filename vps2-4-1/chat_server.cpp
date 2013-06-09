@@ -9,6 +9,7 @@
 #include <set>
 #include <pthread.h>
 #include <algorithm>
+#include <arpa/inet.h>
 
 const int MESSAGE_LENGTH = 4096;
 
@@ -25,8 +26,12 @@ typedef struct _client_info_t {
 int sockfd;
 pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t send_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
+//mapping: room -> client
 map<string, vector<client_info_t> > clients; 
+//mapping: room -> list of messages
 map<string, vector<string> > to_send;
+//mapping: ip -> room
+map<string, string> connected_ips;
 
 int main(int argc, char** argv) {	
 	if(argc != 2) {
@@ -63,9 +68,36 @@ void* receiver(void *args) {
 		ssize_t rec = recvfrom(sockfd,
 			buf, sizeof(buf),
 			0, (struct sockaddr*) &client_info.address,
-			&client_info.addrlen); 		
-		printf("received %ld bytes with text: %s\n", rec, buf);
+			&client_info.addrlen);	
 		
+		char ip[100];	
+		if(inet_ntop(AF_INET, &client_info.address.sin_addr,
+			ip, client_info.addrlen) == NULL) {
+			printf("couldn't convert ip to string");
+			continue;
+		}
+
+		string ipString = ip;
+		printf("ip: %s\n", ip);
+		if(connected_ips.find(ipString) == connected_ips.end()) {
+			pthread_mutex_lock(&client_mutex);		
+			string room = buf;
+			connected_ips[ipString] = room;	
+			clients[room].push_back(client_info);	
+			printf("someone joined %s.\n", room.c_str());
+	
+			pthread_mutex_unlock(&client_mutex);		
+		} else {
+			pthread_mutex_lock(&send_buffer_mutex);
+
+			//get the room of the ip
+			string room = connected_ips[ipString];
+			string message = buf;
+			to_send[room].push_back(message);
+			printf("message received: %s\n", message.c_str());
+
+			pthread_mutex_unlock(&send_buffer_mutex);	
+		}		
 	}	
 }
 
@@ -85,6 +117,7 @@ void send_to_all_clients(pair<const string, vector<string> >& pair) {
 				recipients[i].addrlen);				
 		}	
 	}
+	pair.second.clear();
 
 	pthread_mutex_unlock(&client_mutex);
 }
