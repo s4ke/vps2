@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 #include <pthread.h>
 #include <algorithm>
 
@@ -28,13 +29,16 @@ map<string, vector<client_info_t> > clients;
 map<string, vector<string> > to_send;
 
 int main(int argc, char** argv) {
+	if(argc != 1) {
+		printf("usage: <%s> port", argv[0]);
+	}
 	struct sockaddr_in serv_addr;
     	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     	bzero(&serv_addr, sizeof(serv_addr));
     	serv_addr.sin_family = AF_INET;
     	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    	serv_addr.sin_port = htons(9877);
-	bind(sockfd, (struct sockaddr *) &serv_addr, MESSAGE_LENGTH);
+    	serv_addr.sin_port = htons(atoi(argv[1]));
+	bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 
 	pthread_t rec;
 	pthread_t snd;
@@ -47,6 +51,16 @@ int main(int argc, char** argv) {
 
 void* receiver(void *args) {
 	while(1) {
+		char buf[MESSAGE_LENGTH];
+		bzero(buf, sizeof(buf));
+		client_info_t client_info;
+		//for SOCK_DGRAM we only have
+		//to call the recvfrom(...) methode once
+		ssize_t rec = recvfrom(sockfd,
+			buf, sizeof(buf),
+			0, (struct sockaddr*) &client_info.address,
+			&client_info.addrlen); 		
+		printf("received %ld bytes with text: %s", rec, buf);
 		
 	}	
 }
