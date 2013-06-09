@@ -6,7 +6,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <set>
 #include <pthread.h>
 #include <algorithm>
 #include <arpa/inet.h>
@@ -63,6 +62,7 @@ void* receiver(void *args) {
 		char buf[MESSAGE_LENGTH];
 		bzero(buf, sizeof(buf));
 		client_info_t client_info;
+		client_info.addrlen = sizeof(client_info.address);
 		//for SOCK_DGRAM we only have
 		//to call the recvfrom(...) methode once
 		ssize_t rec = recvfrom(sockfd,

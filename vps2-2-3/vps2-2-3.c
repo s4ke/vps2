@@ -17,7 +17,7 @@ int main (int argc, char** argv)
 
 	for(i = 0; i< 64; ++i)
 	{
-		data[i] = rand();
+		data[i] = rand() % 1999;
 	}
 
 	Merge_Sort_Rec(data, 64, MPI_COMM_WORLD);
