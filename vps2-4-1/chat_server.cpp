@@ -16,6 +16,9 @@
  * the same behaviour like now but with multicast.
  * However the current design was easier to implement.
  * 
+ * In addition to that multicast isn't supported
+ * by all stock router settings.
+ * 
  * We are using pthreads for the multithreading
  * and the synchronization of the program.
  * So please compile this .cpp file
