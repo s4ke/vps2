@@ -1,6 +1,7 @@
 /**
  * File: chat_server.cpp
  * Authors: Martin Braun, Georg Rollinger, Robert Günther
+ * 
  * This server allows you to communicate with the a chat client like
  * the one in this repository in the chatcl.cpp file.
  * 
