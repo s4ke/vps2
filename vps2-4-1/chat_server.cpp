@@ -109,15 +109,18 @@ void* receiver(void *args) {
 	 	stringstream builder;
 		builder << ip << ":" << client_info.address.sin_port;
 		string ipString = builder.str();
-
 		printf("ip: %s\n", ipString.c_str());
+		
+		//if the client is unknown the first message he sends
+		//is the room he wants to be in.
+		//All following traffic are messages.
 		if(connected_ips.find(ipString) == connected_ips.end()) {
 			pthread_mutex_lock(&client_mutex);
 			
 			string room = buf;
 			connected_ips[ipString] = room;	
 			clients[room].push_back(client_info);	
-			printf("someone joined %s.\n", room.c_str());
+			printf("%s joined %s.\n", ipString.c_str(), room.c_str());
 	
 			pthread_mutex_unlock(&client_mutex);		
 		} else {
@@ -127,7 +130,7 @@ void* receiver(void *args) {
 			string room = connected_ips[ipString];
 			string message = buf;
 			to_send[room].push_back(message);
-			printf("message received: %s\n", message.c_str());
+			printf("%s sent message in room %s: %s\n", ipString.c_str(), room.c_str(), message.c_str());
 
 			pthread_mutex_unlock(&send_buffer_mutex);	
 		}		
@@ -144,6 +147,7 @@ void send_to_all_clients(pair<const string, vector<string> >& pair) {
 	for(vector<client_info_t>::size_type i = 0; i != recipients.size(); ++i) {
 		//pair.second is the list of messages to send
 		for(vector<string>::size_type j = 0; j != pair.second.size(); ++j) {
+			//singlecast send this message to the current recipient
 			sendto(sockfd, pair.second[j].c_str(),
 				pair.second[j].length(),
 				0, (struct sockaddr *) &recipients[i].address,
@@ -173,6 +177,8 @@ void* sender(void *args) {
 		for_each(to_send.begin(), to_send.end(), send_to_all_clients);
 		to_send.clear();
 		pthread_mutex_unlock(&send_buffer_mutex);
+		//we are lazy programmers and don't want to use
+		//pthread conditions which definitely could be used here.
 		sleep(1);
 	}
 }
