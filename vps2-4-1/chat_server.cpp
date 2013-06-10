@@ -21,7 +21,6 @@
  * with something like:
  * 
  * 	g++ chat_server.cpp -lpthread -o chatserver
- * 
  */
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -109,7 +108,8 @@ void* receiver(void *args) {
 
 		printf("ip: %s\n", ipString.c_str());
 		if(connected_ips.find(ipString) == connected_ips.end()) {
-			pthread_mutex_lock(&client_mutex);		
+			pthread_mutex_lock(&client_mutex);
+			
 			string room = buf;
 			connected_ips[ipString] = room;	
 			clients[room].push_back(client_info);	
