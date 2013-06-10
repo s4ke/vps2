@@ -1,3 +1,28 @@
+/**
+ * File: chat_server.cpp
+ * Authors: Martin Braun, Georg Rollinger, Robert Günther
+ * This server allows you to communicate with the a chat client like
+ * the one in this repository in the chatcl.cpp file.
+ * 
+ * You can specify the port the server is listening on
+ * via a command line parameter.
+ * 
+ * Furthermore this server doesn't use multicast
+ * because of the way the threads are realized.
+ * If we changed the way that is done to always
+ * sending all the messages to everyone and
+ * then letting the client decide we could achieve
+ * the same behaviour like now but with multicast.
+ * However the current design was easier to implement.
+ * 
+ * We are using pthreads for the multithreading
+ * and the synchronization of the program.
+ * So please compile this .cpp file
+ * with something like:
+ * 
+ * 	g++ chat_server.cpp -lpthread -o chatserver
+ * 
+ */
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
