@@ -109,7 +109,6 @@ void* receiver(void *args) {
 	 	stringstream builder;
 		builder << ip << ":" << client_info.address.sin_port;
 		string ipString = builder.str();
-		printf("ip: %s\n", ipString.c_str());
 		
 		//if the client is unknown the first message he sends
 		//is the room he wants to be in.
