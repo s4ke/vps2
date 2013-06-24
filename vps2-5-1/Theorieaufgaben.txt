@@ -1,0 +1,10 @@
+5.1)
+Zum Nachweis der Nebenläufigkeit:
+
+Das Client-Programm öffnet parallel 2 Sockets.
+Dann beginnt es über den ersten Socket Daten zu senden.
+Dann schick es über den zweiten Socket Daten und erwartet die Antwort des Servers.
+Erst nach Erhalt der Antwort über Socket 2 beendet der Client das Senden der Daten über Socket 1
+und erwartet die Antwort über diesen.
+
+Das zeigt, dass der Server beide Sockets parallel offen haben und Daten empfangen und senden können muss.
