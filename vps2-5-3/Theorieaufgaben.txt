@@ -1,0 +1,20 @@
+5.3a)
+
+Vorteile:
+
+Mit XML und HTTP ist man nicht an Java (oder eine
+beliebige Programmiersprache für die es RMI gibt) gebunden
+und kann mit jeder beliebigen Programmiersprache
+mit der man mit XML und HTTP umgehen kann arbeiten.
+So sind z.B. Programme mit Server Code in C und
+Client Code in Python/Shell, etc. möglich.
+
+XML und HTTP haben keine Firewall Problematik wie es
+RMI hat.
+
+Nachteile:
+
+Durch Benutzung von XML und HTTP entsteht ein Overhead
+in der Übertragung der sonst nicht entstehen würde.
+
+Es wird ein extra HTTP Server benötigt.
