@@ -1,0 +1,23 @@
+5.2a)
+
+Die RMI Registry dient dazu, zur Verfügung stehende Objekte
+nach außen hin sichtbar zu machen. Nur Objekte die darin
+gebindet wurden sind auch benutzbar
+
+5.2b)
+
+Sie werden als Proxies an die Clients "übertragen"
+(wenn ein Remote Object übergeben wird, wird nur der 
+Stub übertragen)
+
+Non-Remote Objects werden komplett kopiert und dann übertragen
+(wenn diese als Parameter in einer Methode vorkommen)
+
+5.2c)
+
+Objekte die per RMI übertragen wurden sind nicht statisch.
+Das lässt sich ganz einfach dadurch sehen, dass man auf
+der Taschenrechner Applikation eine Zahl eingibt, diese
+schließt, und eine zweite öffnet und dann "*" und eine andere
+Zahl eingibt. Wenn man jetzt auf "Berechne" drückt kommt ein
+Ergebnis und keine Fehlermeldung heraus
