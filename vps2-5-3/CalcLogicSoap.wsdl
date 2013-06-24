@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://logik.calc.vps2.bt.edu.de" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://logik.calc.vps2.bt.edu.de">
+    <wsdl:documentation>
+		Please Type your service description here
+	</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://logik.calc.vps2.bt.edu.de">
+            <xs:element name="berechneErgebnisResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAktuellerWertResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setzeOperation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="op" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="zifferHinzu">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ziffer" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getAktuellerWertRequest"/>
+    <wsdl:message name="getAktuellerWertResponse">
+        <wsdl:part name="parameters" element="ns:getAktuellerWertResponse"/>
+    </wsdl:message>
+    <wsdl:message name="setzeOperationRequest">
+        <wsdl:part name="parameters" element="ns:setzeOperation"/>
+    </wsdl:message>
+    <wsdl:message name="berechneErgebnisRequest"/>
+    <wsdl:message name="berechneErgebnisResponse">
+        <wsdl:part name="parameters" element="ns:berechneErgebnisResponse"/>
+    </wsdl:message>
+    <wsdl:message name="zifferHinzuRequest">
+        <wsdl:part name="parameters" element="ns:zifferHinzu"/>
+    </wsdl:message>
+    <wsdl:message name="resetRequest"/>
+    <wsdl:portType name="CalcLogicSoapPortType">
+        <wsdl:operation name="getAktuellerWert">
+            <wsdl:input message="ns:getAktuellerWertRequest" wsaw:Action="urn:getAktuellerWert"/>
+            <wsdl:output message="ns:getAktuellerWertResponse" wsaw:Action="urn:getAktuellerWertResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="setzeOperation">
+            <wsdl:input message="ns:setzeOperationRequest" wsaw:Action="urn:setzeOperation"/>
+        </wsdl:operation>
+        <wsdl:operation name="berechneErgebnis">
+            <wsdl:input message="ns:berechneErgebnisRequest" wsaw:Action="urn:berechneErgebnis"/>
+            <wsdl:output message="ns:berechneErgebnisResponse" wsaw:Action="urn:berechneErgebnisResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="zifferHinzu">
+            <wsdl:input message="ns:zifferHinzuRequest" wsaw:Action="urn:zifferHinzu"/>
+        </wsdl:operation>
+        <wsdl:operation name="reset">
+            <wsdl:input message="ns:resetRequest" wsaw:Action="urn:reset"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="CalcLogicSoapSoap11Binding" type="ns:CalcLogicSoapPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getAktuellerWert">
+            <soap:operation soapAction="urn:getAktuellerWert" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setzeOperation">
+            <soap:operation soapAction="urn:setzeOperation" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="zifferHinzu">
+            <soap:operation soapAction="urn:zifferHinzu" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="berechneErgebnis">
+            <soap:operation soapAction="urn:berechneErgebnis" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="reset">
+            <soap:operation soapAction="urn:reset" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CalcLogicSoapSoap12Binding" type="ns:CalcLogicSoapPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getAktuellerWert">
+            <soap12:operation soapAction="urn:getAktuellerWert" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setzeOperation">
+            <soap12:operation soapAction="urn:setzeOperation" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="zifferHinzu">
+            <soap12:operation soapAction="urn:zifferHinzu" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="berechneErgebnis">
+            <soap12:operation soapAction="urn:berechneErgebnis" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="reset">
+            <soap12:operation soapAction="urn:reset" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CalcLogicSoapHttpBinding" type="ns:CalcLogicSoapPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getAktuellerWert">
+            <http:operation location="CalcLogicSoap/getAktuellerWert"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getAktuellerWert"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getAktuellerWert"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setzeOperation">
+            <http:operation location="CalcLogicSoap/setzeOperation"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="setzeOperation"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="zifferHinzu">
+            <http:operation location="CalcLogicSoap/zifferHinzu"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="zifferHinzu"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="berechneErgebnis">
+            <http:operation location="CalcLogicSoap/berechneErgebnis"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="berechneErgebnis"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="berechneErgebnis"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="reset">
+            <http:operation location="CalcLogicSoap/reset"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="reset"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="CalcLogicSoap">
+        <wsdl:port name="CalcLogicSoapHttpSoap11Endpoint" binding="ns:CalcLogicSoapSoap11Binding">
+            <soap:address location="http://192.168.0.14:8080/vps_5_3_new/services/CalcLogicSoap.CalcLogicSoapHttpSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CalcLogicSoapHttpSoap12Endpoint" binding="ns:CalcLogicSoapSoap12Binding">
+            <soap12:address location="http://192.168.0.14:8080/vps_5_3_new/services/CalcLogicSoap.CalcLogicSoapHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="CalcLogicSoapHttpEndpoint" binding="ns:CalcLogicSoapHttpBinding">
+            <http:address location="http://192.168.0.14:8080/vps_5_3_new/services/CalcLogicSoap.CalcLogicSoapHttpEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

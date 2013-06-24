@@ -18,3 +18,9 @@ Durch Benutzung von XML und HTTP entsteht ein Overhead
 in der Übertragung der sonst nicht entstehen würde.
 
 Es wird ein extra HTTP Server benötigt.
+
+5.3b)
+
+Bemerkung: Leider konnte nicht der ganze Code generiert werden
+und daher konnte die Aufgabe nicht weiter gelöst werden
+als so. :(
