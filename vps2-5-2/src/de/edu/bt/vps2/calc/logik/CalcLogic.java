@@ -16,5 +16,7 @@ public interface CalcLogic extends Remote {
 	 * Hier findet die eigentliche Berechnung statt!
 	 */
 	public String berechneErgebnis() throws RemoteException;
+	
+	public void reset() throws RemoteException;
 
 }

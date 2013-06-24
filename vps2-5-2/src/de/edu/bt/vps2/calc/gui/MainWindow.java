@@ -511,13 +511,10 @@ public class MainWindow extends JFrame {
 				public void mouseClicked(java.awt.event.MouseEvent e) {
 					System.out.println("mouseClicked() on CE");
 					try {
-						calcLogik = MainWindow.getLogicFromServer();
+						calcLogik.reset();
 					} catch(RemoteException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					} catch(NotBoundException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
 					}
 					try {
 						jAnzeigeTextField.setText(calcLogik.getAktuellerWert());

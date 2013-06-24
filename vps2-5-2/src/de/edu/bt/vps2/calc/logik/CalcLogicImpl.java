@@ -1,5 +1,7 @@
 package de.edu.bt.vps2.calc.logik;
 
+import java.rmi.RemoteException;
+
 public class CalcLogicImpl implements CalcLogic {
 	
 	private String aktuellerWert;
@@ -68,6 +70,13 @@ public class CalcLogicImpl implements CalcLogic {
 
 	private Integer add(Integer a, Integer b) {
 		return a + b;
+	}
+
+	@Override
+	public void reset() throws RemoteException {
+		this.aktuellerWert = "0";
+		this.gespeicherterWert = "0";
+		this.operation = "0";
 	}
 
 }
